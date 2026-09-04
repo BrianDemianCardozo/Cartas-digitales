@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu Local - Carta Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#E11D48;--bg:#0f0f0f;--card:#1c1c1c;--text:#fff;--muted:#9ca3af}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);padding-bottom:110px}
+.header{padding:24px 20px;text-align:center;background:linear-gradient(180deg,#1f1f1f,#0f0f0f)}
+.logo{width:80px;height:80px;background:var(--primary);border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;cursor:pointer;user-select:none;overflow:hidden}
+.header h1{font-size:26px;font-weight:800}
+.header p{color:var(--muted);font-size:13px;margin-top:6px}
+.badge{display:inline-block;background:#16a34a;color:#fff;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;margin-top:10px}
+.badge.admin{background:#f59e0b;color:#000;display:none}
+.banner{margin:16px;border-radius:16px;overflow:hidden;height:190px;position:relative;cursor:pointer}
+.banner-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1200') center/cover}
+.banner::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.65) 50%,rgba(0,0,0,0.25) 100%)}
+.banner-content{position:absolute;inset:0;z-index:2;padding:18px;display:flex;flex-direction:column;justify-content:center}
+.banner-tag{display:inline-block;background:var(--primary);color:#fff;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:800;width:fit-content;margin-bottom:8px}
+.banner h2{font-size:20px;font-weight:800;line-height:22px;margin-bottom:4px}
+.banner p{font-size:12px;color:#d1d5db;line-height:14px}
+.banner-cta{margin-top:10px;background:#fff;color:#000;padding:8px 14px;border-radius:20px;font-size:11px;font-weight:800;width:fit-content}
+.categories{display:flex;gap:8px;padding:0 16px;overflow-x:auto;margin:16px 0;scrollbar-width:none}
+.categories::-webkit-scrollbar{display:none}
+.cat{background:var(--card);padding:8px 16px;border-radius:20px;font-size:13px;white-space:nowrap;border:1px solid #2a2a2a;cursor:pointer}
+.cat.active{background:var(--primary);border-color:var(--primary)}
+.menu{padding:0 16px;display:grid;gap:14px}
+.item{background:var(--card);border-radius:16px;display:flex;overflow:hidden;border:1px solid #262626;transition:.2s;position:relative}
+.item.admin-editing{border-color:#f59e0b}
+.item img{width:88px;height:88px;object-fit:cover}
+.info{flex:1;padding:12px}
+.info h3{font-size:14px;font-weight:600}
+.info p{font-size:11px;color:var(--muted);margin:4px 0;line-height:13px}
+.price{color:var(--primary);font-weight:800;font-size:14px;margin-top:4px;cursor:pointer}
+.price.admin-price{color:#f59e0b;background:#1f1f1f;padding:6px 10px;border-radius:8px;border:1px dashed #f59e0b;display:inline-flex;gap:6px}
+.add{margin:12px;background:var(--primary);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.cart-bar{position:fixed;bottom:0;left:0;right:0;background:#1c1c1c;border-top:1px solid #2a2a2a;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:100}
+.cart-bar button{background:var(--primary);color:#fff;border:none;padding:12px 20px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.closed-screen{position:fixed;inset:0;background:#0f0f0f;z-index:999;display:none;align-items:center;justify-content:center;text-align:center;padding:20px}
+.closed-screen.active{display:flex}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:none;align-items:flex-end}
+.modal.active{display:flex}
+.modal-box{background:#1c1c1c;width:100%;max-height:85vh;border-radius:20px 20px 0 0;padding:20px;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.cart-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #262626;font-size:13px}
+.qty-controls{display:flex;align-items:center;gap:8px}
+.qty-controls button{width:24px;height:24px;border-radius:50%;border:1px solid #333;background:#262626;color:#fff;cursor:pointer}
+.wa-btn{width:100%;background:#25D366;color:#fff;border:none;padding:16px;border-radius:12px;font-weight:800;font-size:15px;margin-top:16px;cursor:pointer}
+.input{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#0f0f0f;color:#fff;font-size:13px;margin-top:8px}
+.login-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.login-overlay.active{display:flex}
+.login-box{background:#1c1c1c;border:1px solid #333;border-radius:20px;padding:24px;width:100%;max-width:340px;text-align:center}
+.pin-input{letter-spacing:12px;font-size:24px;text-align:center;font-weight:800}
+.admin-toolbar{position:fixed;top:0;left:0;right:0;background:#f59e0b;color:#000;padding:10px 16px;z-index:400;display:none;justify-content:space-between;align-items:center;font-size:13px;font-weight:800}
+.admin-toolbar.active{display:flex}
+.combo-badge{position:absolute;top:8px;left:8px;background:#f59e0b;color:#000;padding:3px 8px;border-radius:8px;font-size:9px;font-weight:800;z-index:3}
+</style>
+</head>
+<body>
+<script>
+const ACTIVO = true;
+const MENSAJE_CIERRE = "Cerrado por el momento, volvemos pronto! ðŸ”¥";
+const WHATSAPP_NUMERO = "5491134890644";
+const PIN_ADMIN = "1234";
+function getCostoEnvio(){
+  const g = localStorage.getItem('costo_envio_final');
+  return g !== null ? parseInt(g) : 1500;
+}
+let COSTO_ENVIO = getCostoEnvio();
+let categoriaActiva = 'todos';
+const productos_base = [
+  {id:1, cat:'combo', nombre:"COMBO FAMILIAR", desc:"2 Cuarto Doble + Papas Cheddar + Coca Cola 1.5L - El mÃ¡s pedido", precio:24500, img:"https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=300", promo:true},
+  {id:2, cat:'burger', nombre:"Cuarto Doble + Papas + Coca", desc:"Doble carne 120g, cheddar x4, papas grandes + Coca 1.5L", precio:14900, img:"https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=300"},
+  {id:3, cat:'burger', nombre:"Bacon Explosion", desc:"Carne 180g, bacon crocante, barbacoa, cheddar, papas", precio:12800, img:"https://images.unsplash.com/photo-1586190848861-99aa4a171e90?q=80&w=300"},
+  {id:4, cat:'pizza', nombre:"Muzza Gigante 12 porciones", desc:"Mozzarella, salsa pomodoro, orÃ©gano fresco", precio:9000, img:"https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=300"},
+  {id:5, cat:'pizza', nombre:"Napolitana con JamÃ³n", desc:"Muzza, jamÃ³n, tomate, ajo", precio:10200, img:"https://images.unsplash.com/photo-1579751626657-72bc17010498?q=80&w=300"},
+  {id:6, cat:'papas', nombre:"Papas Cheddar Full", desc:"Papas, cheddar, verdeo, bacon crocante", precio:6500, img:"https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=300"},
+  {id:7, cat:'papas', nombre:"Papas ClÃ¡sicas Grandes", desc:"PorciÃ³n grande para compartir", precio:4500, img:"https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?q=80&w=300"},
+  {id:8, cat:'bebida', nombre:"Coca Cola 1.5L", desc:"Bien frÃ­a", precio:3500, img:"https://images.unsplash.com/photo-1553456558-aff63285bdd1?q=80&w=300"},
+  {id:9, cat:'bebida', nombre:"Cerveza Heineken 1L", desc:"Helada", precio:4800, img:"https://images.unsplash.com/photo-1608270586620-248524c67de9?q=80&w=300"}
+];
+function getProductos() {
+  const guardados = JSON.parse(localStorage.getItem('precios_admin_final') || '{}');
+  return productos_base.map(p => guardados[p.id] ? {...p, precio: guardados[p.id]} : p);
+}
+let productos = getProductos();
+let modoAdmin = localStorage.getItem('modo_admin_final') === 'true';
+</script>
+
+<div id="admin-toolbar" class="admin-toolbar"><div><span>ðŸ”§ MODO ADMIN</span><span id="admin-envio-info" style="margin-left:12px;background:#000;color:#f59e0b;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer" onclick="editarEnvio()">ðŸ›µ EnvÃ­o: $1.500 âœï¸</span></div><button onclick="salirAdmin()" style="background:#000;color:#fff;border:none;padding:6px 12px;border-radius:8px;font-weight:700;font-size:12px">Salir âœ•</button></div>
+
+<div id="closed" class="closed-screen"><div><div style="font-size:64px">ðŸ”’</div><h2 style="font-size:22px;margin:12px 0" id="msg-cierre"></h2></div></div>
+
+<div id="login-overlay" class="login-overlay" onclick="if(event.target==this) cerrarLogin()"><div class="login-box"><h3>ðŸ”’</h3><p style="color:#fff;font-weight:700;margin-bottom:4px">Acceso administrador</p><input id="pin-input" class="input pin-input" type="password" maxlength="4" placeholder="â€¢â€¢â€¢â€¢" inputmode="numeric"><button class="wa-btn" style="background:#f59e0b;color:#000;margin-top:12px" onclick="validarPin()">Entrar</button><button onclick="cerrarLogin()" style="background:transparent;border:none;color:#666;margin-top:12px;font-size:12px">Cancelar</button><p id="login-error" style="color:#E11D48;font-size:12px;margin-top:10px;display:none">PIN incorrecto</p></div></div>
+
+<div class="header"><div class="logo" id="logo-btn">ðŸ”¥</div><h1>TU LOCAL</h1><p>ðŸ“ Lomas de Zamora Â· ðŸ•’ Lun a Dom 19 a 23hs</p><div class="badge">â— ABIERTO AHORA</div><div id="badge-admin" class="badge admin">ðŸ”§ ADMIN</div></div>
+
+<div class="banner" onclick="filtrar('combo', document.querySelector('.cat:nth-child(2)'))"><div class="banner-bg"></div><div class="banner-content"><div class="banner-tag">ðŸ”¥ COMBO MÃS PEDIDO</div><h2>2 CUARTO DOBLE<br>+ PAPAS + COCA 1.5L</h2><p>El combo que mÃ¡s sale, con Coca frÃ­a</p><div class="banner-cta">Ver combo â†’ $24.500</div></div></div>
+
+<div class="categories" id="cats"><div class="cat active" onclick="filtrar('todos',this)">Todos</div><div class="cat" onclick="filtrar('combo',this)">ðŸ”¥ Combos</div><div class="cat" onclick="filtrar('burger',this)">ðŸ” Burgers</div><div class="cat" onclick="filtrar('pizza',this)">ðŸ• Pizzas</div><div class="cat" onclick="filtrar('papas',this)">ðŸŸ Papas</div><div class="cat" onclick="filtrar('bebida',this)">ðŸ¥¤ Bebidas</div></div>
+
+<div class="menu" id="menu"></div>
+
+<div class="cart-bar"><div><div style="font-size:11px;color:#9ca3af"><span id="cart-count">0</span> productos</div><div style="font-weight:800" id="cart-total">$0</div></div><button onclick="abrirCarrito()">Ver pedido ðŸ›’</button></div>
+
+<div class="modal" id="modal" onclick="if(event.target==this) cerrarCarrito()"><div class="modal-box"><div class="modal-header"><h3>ðŸ›’ Tu pedido</h3><button onclick="cerrarCarrito()" style="background:#262626;border:none;color:#fff;width:30px;height:30px;border-radius:50%">âœ•</button></div><div id="cart-items"></div><div style="margin-top:18px;background:#111;border-radius:12px;padding:14px;border:1px solid #262626"><input id="input-nombre" class="input" placeholder="ðŸ‘¤ Tu nombre (obligatorio)"><div style="font-weight:700;font-size:13px;margin:16px 0 10px 0">Â¿CÃ³mo querÃ©s recibirlo?</div><div style="display:flex;gap:10px"><button id="btn-retiro" onclick="setEntrega('retiro')" style="flex:1;padding:12px;border-radius:10px;border:1px solid #333;background:#E11D48;color:#fff;font-weight:700;font-size:13px">ðŸª Retiro</button><button id="btn-envio" onclick="setEntrega('envio')" style="flex:1;padding:12px;border-radius:10px;border:1px solid #333;background:#262626;color:#fff;font-weight:700;font-size:13px">ðŸ›µ EnvÃ­o</button></div><div id="campos-envio" style="display:none;margin-top:12px"><input id="input-direccion" class="input" placeholder="ðŸ“ Tu direcciÃ³n"><input id="input-piso" class="input" placeholder="Piso/Depto (opcional)"><div class="costo-envio-txt" style="margin-top:8px;font-size:12px;color:#9ca3af">ðŸ’° Costo de envÃ­o: $1.500</div></div><div id="campos-retiro" style="margin-top:10px;font-size:12px;color:#16a34a">âœ… Te avisamos por WhatsApp cuando estÃ© listo</div></div><div style="display:flex;justify-content:space-between;margin-top:16px;font-weight:800;font-size:16px"><span id="label-total">Total productos:</span><span id="modal-total">$0</span></div><div id="total-final" style="display:flex;justify-content:space-between;margin-top:6px;font-weight:800;font-size:18px;color:#25D366;display:none"><span>Total final:</span><span id="modal-total-final">$0</span></div><button class="wa-btn" onclick="enviarWhatsApp()">Enviar pedido por WhatsApp ðŸ“²</button></div></div>
+
+<script>
+document.getElementById('msg-cierre').innerText = MENSAJE_CIERRE;
+if(!ACTIVO) document.getElementById('closed').classList.add('active');
+let carrito = {}; let tipoEntrega = 'retiro';
+let clicksLogo = 0; let timerLogo = null;
+document.getElementById('logo-btn').addEventListener('click', ()=>{
+  clicksLogo++;
+  if(clicksLogo>=5){ clicksLogo=0; abrirLogin(); }
+  clearTimeout(timerLogo);
+  timerLogo = setTimeout(()=>{clicksLogo=0}, 2000);
+});
+function abrirLogin(){ document.getElementById('login-overlay').classList.add('active'); document.getElementById('pin-input').focus(); document.getElementById('login-error').style.display='none'; document.getElementById('pin-input').value=''; }
+function cerrarLogin(){ document.getElementById('login-overlay').classList.remove('active'); }
+function validarPin(){
+  const pin = document.getElementById('pin-input').value;
+  if(pin === PIN_ADMIN){ modoAdmin = true; localStorage.setItem('modo_admin_final','true'); cerrarLogin(); activarAdminUI(); }
+  else { document.getElementById('login-error').style.display='block'; }
+}
+document.getElementById('pin-input').addEventListener('keydown', (e)=>{ if(e.key==='Enter') validarPin(); });
+function activarAdminUI(){ 
+  document.getElementById('admin-toolbar').classList.add('active'); 
+  document.getElementById('badge-admin').style.display='inline-block'; 
+  document.body.style.paddingTop='40px'; 
+  const ce = getCostoEnvio();
+  const el = document.getElementById('admin-envio-info');
+  if(el) el.innerText = `ðŸ›µ EnvÃ­o: $${ce.toLocaleString('es-AR')} âœï¸`;
+  document.querySelectorAll('.costo-envio-txt').forEach(e=> e.innerText = ce==0 ? `ðŸ’° EnvÃ­o gratis` : `ðŸ’° Costo de envÃ­o: $${ce.toLocaleString('es-AR')}`);
+  renderMenu(); 
+}
+function salirAdmin(){ modoAdmin=false; localStorage.setItem('modo_admin_final','false'); document.getElementById('admin-toolbar').classList.remove('active'); document.getElementById('badge-admin').style.display='none'; document.body.style.paddingTop='0'; renderMenu(); }
+if(modoAdmin) activarAdminUI();
+function setEntrega(tipo){
+  tipoEntrega = tipo;
+  document.getElementById('btn-retiro').style.background = tipo=='retiro' ? '#E11D48' : '#262626';
+  document.getElementById('btn-envio').style.background = tipo=='envio' ? '#E11D48' : '#262626';
+  document.getElementById('campos-envio').style.display = tipo=='envio' ? 'block' : 'none';
+  document.getElementById('campos-retiro').style.display = tipo=='retiro' ? 'block' : 'none';
+  document.getElementById('total-final').style.display = tipo=='envio' ? 'flex' : 'none';
+  document.getElementById('label-total').innerText = tipo=='envio' ? 'Subtotal:' : 'Total:';
+  actualizarBarra();
+}
+function renderMenu(){
+  const cont = document.getElementById('menu');
+  let lista = categoriaActiva==='todos' ? productos : productos.filter(p=>p.cat===categoriaActiva);
+  cont.innerHTML = lista.map(p=>{
+    const promo = p.promo ? `<div class="combo-badge">ðŸ”¥ COMBO</div>` : '';
+    if(modoAdmin){
+      return `<div class="item admin-editing">${promo}<img src="${p.img}"><div class="info"><h3>${p.nombre}</h3><p>${p.desc}</p><div class="price admin-price" onclick="editarPrecio(${p.id})">$${p.precio.toLocaleString('es-AR')} âœï¸</div></div><button class="add" onclick="agregar(${p.id})">+</button></div>`;
+    } else {
+      return `<div class="item">${promo}<img src="${p.img}"><div class="info"><h3>${p.nombre}</h3><p>${p.desc}</p><div class="price">$${p.precio.toLocaleString('es-AR')}</div></div><button class="add" onclick="agregar(${p.id})">+</button></div>`;
+    }
+  }).join('');
+}
+function editarPrecio(id){
+  const prod = productos.find(p=>p.id==id);
+  const nuevo = prompt(`Nuevo precio para ${prod.nombre}:`, prod.precio);
+  if(nuevo===null) return;
+  const num = parseInt(nuevo.replace(/\D/g,''));
+  if(!num){ alert('Precio invÃ¡lido'); return; }
+  const guardados = JSON.parse(localStorage.getItem('precios_admin_final') || '{}');
+  guardados[id]=num;
+  localStorage.setItem('precios_admin_final', JSON.stringify(guardados));
+  productos = getProductos();
+  renderMenu(); actualizarBarra();
+}
+function editarEnvio(){
+  const actual = getCostoEnvio();
+  const nuevo = prompt(`Costo de envÃ­o actual: $${actual}\nNuevo costo (ponÃ© 0 para envÃ­o gratis):`, actual);
+  if(nuevo===null) return;
+  const num = parseInt(nuevo.replace(/\D/g,''));
+  if(isNaN(num)){ alert('Costo invÃ¡lido'); return; }
+  localStorage.setItem('costo_envio_final', num);
+  COSTO_ENVIO = num;
+  const el = document.getElementById('admin-envio-info');
+  if(el) el.innerText = `ðŸ›µ EnvÃ­o: $${num.toLocaleString('es-AR')} âœï¸`;
+  document.querySelectorAll('.costo-envio-txt').forEach(e=> e.innerText = num==0 ? `ðŸ’° EnvÃ­o gratis` : `ðŸ’° Costo de envÃ­o: $${num.toLocaleString('es-AR')}`);
+  actualizarBarra();
+}
+function filtrar(cat,el){
+  categoriaActiva=cat;
+  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderMenu();
+}
+function agregar(id){ carrito[id] = (carrito[id]||0)+1; actualizarBarra(); if(navigator.vibrate) navigator.vibrate(30); }
+function actualizarBarra(){
+  let total=0, count=0;
+  for(let id in carrito){
+    let prod = productos.find(x=>x.id==id);
+    if(!prod) continue;
+    total+= prod.precio*carrito[id];
+    count+= carrito[id];
+  }
+  let totalFinal = tipoEntrega=='envio' ? total + getCostoEnvio() : total;
+  document.getElementById('cart-total').innerText = '$'+totalFinal.toLocaleString('es-AR');
+  document.getElementById('modal-total').innerText = '$'+total.toLocaleString('es-AR');
+  document.getElementById('modal-total-final').innerText = '$'+totalFinal.toLocaleString('es-AR');
+  document.getElementById('cart-count').innerText = count;
+  renderCartItems();
+}
+function renderCartItems(){
+  const cont = document.getElementById('cart-items');
+  if(Object.keys(carrito).length==0){cont.innerHTML='<p style="color:#666;text-align:center;padding:20px">Tu carrito estÃ¡ vacÃ­o</p>';return}
+  cont.innerHTML = Object.keys(carrito).map(id=>{
+    let prod = productos.find(x=>x.id==id);
+    if(!prod) return '';
+    return `<div class="cart-item"><div><b>${prod.nombre}</b> x${carrito[id]}<br><span style="color:#9ca3af">$${prod.precio.toLocaleString('es-AR')}</span></div><div class="qty-controls"><button onclick="cambiarQty(${id},-1)">-</button><span>${carrito[id]}</span><button onclick="cambiarQty(${id},1)">+</button></div></div>`;
+  }).join('');
+}
+function cambiarQty(id,delta){ carrito[id]+=delta; if(carrito[id]<=0) delete carrito[id]; actualizarBarra(); }
+function abrirCarrito(){document.getElementById('modal').classList.add('active')}
+function cerrarCarrito(){document.getElementById('modal').classList.remove('active')}
+function enviarWhatsApp(){
+  if(Object.keys(carrito).length==0){alert('AgregÃ¡ algo primero!');return}
+  let nom = document.getElementById('input-nombre').value.trim();
+  if(!nom){alert('ðŸ‘¤ PonÃ© tu nombre');document.getElementById('input-nombre').focus();return}
+  if(tipoEntrega=='envio'){
+    let dir = document.getElementById('input-direccion').value.trim();
+    if(!dir){alert('ðŸ“ PonÃ© tu direcciÃ³n');return}
+  }
+  let mensaje = `Hola! Nuevo pedido a nombre de *${nom}*:%0A%0A`;
+  let total=0;
+  for(let id in carrito){
+    let prod = productos.find(x=>x.id==id);
+    mensaje+= `â€¢ ${prod.nombre} x${carrito[id]} - $${(prod.precio*carrito[id]).toLocaleString('es-AR')}%0A`;
+    total+=prod.precio*carrito[id];
+  }
+  mensaje+= `%0A*Subtotal: $${total.toLocaleString('es-AR')}*%0A`;
+  if(tipoEntrega=='envio'){
+    let dir = document.getElementById('input-direccion').value;
+    let piso = document.getElementById('input-piso').value;
+    const ce = getCostoEnvio();
+    mensaje+= `%0A*Tipo: ðŸ›µ ENVÃO*%0AðŸ‘¤ ${nom}%0AðŸ“ ${dir} ${piso ? '('+piso+')' : ''}%0A`;
+    if(ce==0) mensaje+= `ðŸ’° EnvÃ­o: GRATIS%0A`;
+    else mensaje+= `ðŸ’° Costo envÃ­o: $${ce.toLocaleString('es-AR')}%0A`;
+    mensaje+= `*Total: $${(total+ce).toLocaleString('es-AR')}*%0A`;
+  } else {
+    mensaje+= `%0A*Tipo: ðŸª RETIRO*%0AðŸ‘¤ ${nom}%0A*Total: $${total.toLocaleString('es-AR')}*%0A`;
+  }
+  window.open(`https://wa.me/${WHATSAPP_NUMERO}?text=${mensaje}`,'_blank');
+}
+renderMenu();
+const ceInit = getCostoEnvio();
+document.querySelectorAll('.costo-envio-txt').forEach(e=> e.innerText = ceInit==0 ? `ðŸ’° EnvÃ­o gratis` : `ðŸ’° Costo de envÃ­o: $${ceInit.toLocaleString('es-AR')}`);
+</script>
+</body>
+</html>
