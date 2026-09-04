@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu Local - Carta Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#E11D48;--bg:#0f0f0f;--card:#1c1c1c;--text:#fff;--muted:#9ca3af}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);padding-bottom:110px}
+.header{padding:24px 20px;text-align:center;background:linear-gradient(180deg,#1f1f1f,#0f0f0f)}
+.logo{width:80px;height:80px;background:var(--primary);border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;cursor:pointer;user-select:none;overflow:hidden}
+.header h1{font-size:26px;font-weight:800}
+.header p{color:var(--muted);font-size:13px;margin-top:6px}
+.badge{display:inline-block;background:#16a34a;color:#fff;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;margin-top:10px}
+.banner{margin:16px;border-radius:16px;overflow:hidden;height:190px;position:relative;cursor:pointer}
+.banner-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1200') center/cover}
+.banner::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.65) 50%,rgba(0,0,0,0.25) 100%)}
+.banner-content{position:absolute;inset:0;z-index:2;padding:18px;display:flex;flex-direction:column;justify-content:center}
+.banner-tag{display:inline-block;background:var(--primary);color:#fff;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:800;width:fit-content;margin-bottom:8px}
+.banner h2{font-size:20px;font-weight:800;line-height:22px;margin-bottom:4px}
+.banner p{font-size:12px;color:#d1d5db;line-height:14px}
+.banner-cta{margin-top:10px;background:#fff;color:#000;padding:8px 14px;border-radius:20px;font-size:11px;font-weight:800;width:fit-content}
+.categories{display:flex;gap:8px;padding:0 16px;overflow-x:auto;margin:16px 0;scrollbar-width:none}
+.categories::-webkit-scrollbar{display:none}
+.cat{background:var(--card);padding:8px 16px;border-radius:20px;font-size:13px;white-space:nowrap;border:1px solid #2a2a2a;cursor:pointer}
+.cat.active{background:var(--primary);border-color:var(--primary)}
+.menu{padding:0 16px;display:grid;gap:14px}
+.item{background:var(--card);border-radius:16px;display:flex;overflow:hidden;border:1px solid #262626;transition:.2s;position:relative}
+.item img{width:88px;height:88px;object-fit:cover}
+.info{flex:1;padding:12px}
+.info h3{font-size:14px;font-weight:600}
+.info p{font-size:11px;color:var(--muted);margin:4px 0;line-height:13px}
+.price{color:var(--primary);font-weight:800;font-size:14px;margin-top:4px}
+.add{margin:12px;background:var(--primary);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.cart-bar{position:fixed;bottom:0;left:0;right:0;background:#1c1c1c;border-top:1px solid #2a2a2a;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:100}
+.cart-bar button{background:var(--primary);color:#fff;border:none;padding:12px 20px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:none;align-items:flex-end}
+.modal.active{display:flex}
+.modal-box{background:#1c1c1c;width:100%;max-height:85vh;border-radius:20px 20px 0 0;padding:20px;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.cart-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #262626;font-size:13px}
+.qty-controls{display:flex;align-items:center;gap:8px}
+.qty-controls button{width:24px;height:24px;border-radius:50%;border:1px solid #333;background:#262626;color:#fff;cursor:pointer}
+.wa-btn{width:100%;background:#25D366;color:#fff;border:none;padding:16px;border-radius:12px;font-weight:800;font-size:15px;margin-top:16px;cursor:pointer}
+.input{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#0f0f0f;color:#fff;font-size:13px;margin-top:8px}
+.combo-badge{position:absolute;top:8px;left:8px;background:#f59e0b;color:#000;padding:3px 8px;border-radius:8px;font-size:9px;font-weight:800;z-index:3}
+</style>
+</head>
+<body>
+<div class="header"><div class="logo">🔥</div><h1>Tu Local</h1><p>Carta digital - Pedidos por WhatsApp</p><span class="badge">● ABIERTO</span></div>
+<div class="banner" onclick="filtrar('combo')"><div class="banner-bg"></div><div class="banner-content"><span class="banner-tag">🔥 MAS PEDIDO</span><h2>COMBO FAMILIAR</h2><p>2 Cuarto Doble + Papas Cheddar + Coca 1.5L</p><div class="banner-cta">Ver combo →</div></div></div>
+<div class="categories"><div class="cat active" onclick="filtrar('todos',this)">Todos</div><div class="cat" onclick="filtrar('combo',this)">🔥 Combos</div><div class="cat" onclick="filtrar('burger',this)">🍔 Burgers</div></div>
+<div class="menu" id="menu"></div>
+<div class="cart-bar"><div><div style="font-size:11px;color:#9ca3af">Total</div><div id="cart-total" style="font-weight:800">$0</div><div style="font-size:10px;color:#9ca3af"><span id="cart-count">0</span> productos</div></div><button onclick="abrirCarrito()">🛒 Ver pedido</button></div>
+<div class="modal" id="modal"><div class="modal-box"><div class="modal-header"><h3 style="font-weight:800">Tu pedido</h3><button onclick="cerrarCarrito()" style="background:#262626;border:none;color:#fff;width:28px;height:28px;border-radius:50%">✕</button></div><div id="cart-items"></div><div style="margin-top:16px"><input id="input-nombre" class="input" placeholder="Tu nombre"><div style="display:flex;gap:8px;margin-top:8px"><button id="btn-retiro" onclick="setEntrega('retiro')" style="flex:1;background:#E11D48;border:none;color:#fff;padding:10px;border-radius:10px;font-weight:700">🏪 Retiro</button><button id="btn-envio" onclick="setEntrega('envio')" style="flex:1;background:#262626;border:none;color:#fff;padding:10px;border-radius:10px;font-weight:700">🛵 Envío</button></div><div id="campos-envio" style="display:none"><input id="input-direccion" class="input" placeholder="Dirección"><input id="input-piso" class="input" placeholder="Piso / Depto (opcional)"><p style="font-size:12px;color:#9ca3af;margin-top:8px">💰 Costo de envío: $1.500</p></div><div id="campos-retiro" style="display:block"><p style="font-size:12px;color:#9ca3af;margin-top:8px">📍 Retiro en local</p></div><div style="display:flex;justify-content:space-between;margin-top:16px;font-size:13px"><span id="label-total">Total:</span><span id="modal-total" style="font-weight:800">$0</span></div><div id="total-final" style="display:none;justify-content:space-between;margin-top:6px;font-size:14px;font-weight:800"><span>Total con envío:</span><span id="modal-total-final">$0</span></div><button class="wa-btn" onclick="enviarWhatsApp()">📲 Enviar pedido por WhatsApp</button></div></div></div>
+<script>
+const COSTO_ENVIO = 1500;
+const WHATSAPP_NUMERO = "5491134890644";
+let tipoEntrega='retiro';
+let carrito={};
+let categoriaActiva='todos';
+const productos = [
+  {id:1, cat:'combo', nombre:"COMBO FAMILIAR", desc:"2 Cuarto Doble + Papas Cheddar + Coca Cola 1.5L - El más pedido", precio:24500, img:"https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=300", promo:true},
+  {id:2, cat:'burger', nombre:"Cuarto Doble + Papas + Coca", desc:"Doble carne 120g, cheddar x4, papas grandes + Coca 1.5L", precio:14900, img:"https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=300"},
+  {id:3, cat:'burger', nombre:"Bacon Explosion", desc:"Carne 180g, bacon crocante, barbacoa, cheddar, papas", precio:12800, img:"https://images.unsplash.com/photo-1586190848861-99aa4a171e90?q=80&w=300"},
+  {id:4, cat:'burger', nombre:"Classic Simple", desc:"Carne 120g, cheddar, lechuga, tomate, papas", precio:8900, img:"https://images.unsplash.com/photo-1568909344668-6f14a07b56a0?q=80&w=300"}
+];
+function setEntrega(tipo){ tipoEntrega=tipo; document.getElementById('btn-retiro').style.background=tipo=='retiro'?'#E11D48':'#262626'; document.getElementById('btn-envio').style.background=tipo=='envio'?'#E11D48':'#262626'; document.getElementById('campos-envio').style.display=tipo=='envio'?'block':'none'; document.getElementById('campos-retiro').style.display=tipo=='retiro'?'block':'none'; document.getElementById('total-final').style.display=tipo=='envio'?'flex':'none'; document.getElementById('label-total').innerText=tipo=='envio'?'Subtotal:':'Total:'; actualizarBarra(); }
+function renderMenu(){ const cont=document.getElementById('menu'); let lista=categoriaActiva==='todos'?productos:productos.filter(p=>p.cat===categoriaActiva); cont.innerHTML=lista.map(p=>{ const promo=p.promo?`<div class="combo-badge">🔥 COMBO</div>`:''; return `<div class="item">${promo}<img src="${p.img}"><div class="info"><h3>${p.nombre}</h3><p>${p.desc}</p><div class="price">$${p.precio.toLocaleString('es-AR')}</div></div><button class="add" onclick="agregar(${p.id})">+</button></div>`; }).join(''); }
+function filtrar(cat,el){ categoriaActiva=cat; document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active')); if(el) el.classList.add('active'); renderMenu(); }
+function agregar(id){ carrito[id]=(carrito[id]||0)+1; actualizarBarra(); }
+function actualizarBarra(){ let total=0,count=0; for(let id in carrito){ let prod=productos.find(x=>x.id==id); if(!prod) continue; total+=prod.precio*carrito[id]; count+=carrito[id]; } let totalFinal=tipoEntrega=='envio'?total+COSTO_ENVIO:total; document.getElementById('cart-total').innerText='$'+totalFinal.toLocaleString('es-AR'); document.getElementById('modal-total').innerText='$'+total.toLocaleString('es-AR'); document.getElementById('modal-total-final').innerText='$'+totalFinal.toLocaleString('es-AR'); document.getElementById('cart-count').innerText=count; renderCartItems(); }
+function renderCartItems(){ const cont=document.getElementById('cart-items'); if(Object.keys(carrito).length==0){cont.innerHTML='<p style="color:#666;text-align:center;padding:20px">Tu carrito está vacío</p>';return} cont.innerHTML=Object.keys(carrito).map(id=>{ let prod=productos.find(x=>x.id==id); if(!prod) return ''; return `<div class="cart-item"><div><b>${prod.nombre}</b> x${carrito[id]}<br><span style="color:#9ca3af">$${prod.precio.toLocaleString('es-AR')}</span></div><div class="qty-controls"><button onclick="cambiarQty(${id},-1)">-</button><span>${carrito[id]}</span><button onclick="cambiarQty(${id},1)">+</button></div></div>`; }).join(''); }
+function cambiarQty(id,delta){ carrito[id]+=delta; if(carrito[id]<=0) delete carrito[id]; actualizarBarra(); }
+function abrirCarrito(){document.getElementById('modal').classList.add('active')}
+function cerrarCarrito(){document.getElementById('modal').classList.remove('active')}
+function enviarWhatsApp(){ if(Object.keys(carrito).length==0){alert('Agregá algo primero!');return} let nom=document.getElementById('input-nombre').value.trim(); if(!nom){alert('Poné tu nombre');return} let mensaje=`Hola! Nuevo pedido a nombre de *${nom}*:%0A%0A`; let total=0; for(let id in carrito){ let prod=productos.find(x=>x.id==id); mensaje+=`• ${prod.nombre} x${carrito[id]} - $${(prod.precio*carrito[id]).toLocaleString('es-AR')}%0A`; total+=prod.precio*carrito[id]; } if(tipoEntrega=='envio'){ let dir=document.getElementById('input-direccion').value; mensaje+=`%0A*ENVIO*%0A${dir}%0A*Total: $${(total+COSTO_ENVIO).toLocaleString('es-AR')}*`; } else { mensaje+=`%0A*RETIRO*%0A*Total: $${total.toLocaleString('es-AR')}*`; } window.open(`https://wa.me/${WHATSAPP_NUMERO}?text=${mensaje}`,'_blank'); }
+renderMenu();
+</script>
+</body>
+</html>
