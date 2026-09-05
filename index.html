@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TU LOCAL - Carta Digital</title>
+<title>TU LOCAL - Carta Digital (Google Sheets)</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{--primary:#E11D48;--bg:#0f0f0f;--card:#1c1c1c;--text:#fff;--muted:#9ca3af}
@@ -50,17 +50,15 @@ body{background:var(--bg);color:var(--text);padding-bottom:110px}
 </head>
 <body>
 <script>
-// ===== CONFIG FICTICIA - EDITAR POR CLIENTE =====
+// ===== CONFIG - TU LOCAL FICTICIO CONECTADO A TU SHEET =====
 const NOMBRE_LOCAL = "TU LOCAL";
-const DIRECCION_LOCAL = "Av. Siempreviva 123, Lomas de Zamora - EDITAR POR CLIENTE";
+const DIRECCION_LOCAL = "Av. Siempreviva 123, Lomas de Zamora";
 const WHATSAPP_NUMERO = "5491134890644";
 const COSTO_ENVIO = 1500;
-const ACTIVO = true;
 
-// PEGA AQUI EL LINK CSV DE GOOGLE SHEETS
-// Tiene que terminar en output=csv
-// Ejemplo: https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?output=csv
-const SHEET_CSV_URL = "PEGA_AQUI_TU_LINK_CSV";
+// TU PLANILLA - YA CONVERTIDO A CSV
+// ID: 10omVnMxNd5BKrQGtRgGsGsEZIg1oR7JFxX54I356UOU
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/10omVnMxNd5BKrQGtRgGsGsEZIg1oR7JFxX54I356UOU/export?format=csv";
 
 let categoriaActiva = 'todos';
 let productos = [];
@@ -72,7 +70,7 @@ let tipoEntrega = 'retiro';
 <div class="logo">LOGO</div>
 <h1 id="h1-local">TU LOCAL</h1>
 <p id="p-dir"></p>
-<div class="badge">ABIERTO AHORA - Google Sheets</div>
+<div class="badge">ABIERTO AHORA - Google Sheets conectado</div>
 </div>
 
 <div class="banner" onclick="filtrar('combo', document.querySelector('.cat:nth-child(2)'))">
@@ -86,7 +84,7 @@ let tipoEntrega = 'retiro';
 </div>
 
 <div class="categories" id="cats"><div class="cat active" onclick="filtrar('todos',this)">Todos</div></div>
-<div class="menu" id="menu"><div class="loading">Cargando carta desde Google Sheets...</div></div>
+<div class="menu" id="menu"><div class="loading">Cargando carta desde tu Google Sheets...<br><small>Si ves este mensaje mas de 3 segundos, falta publicar la planilla</small></div></div>
 
 <div class="cart-bar"><div><div style="font-size:11px;color:#9ca3af"><span id="cart-count">0</span> productos</div><div style="font-weight:800" id="cart-total">$0</div></div><button onclick="abrirCarrito()">Ver pedido</button></div>
 
@@ -142,13 +140,14 @@ function parseCSV(text){
 }
 
 async function cargarSheets(){
-  if(!SHEET_CSV_URL || SHEET_CSV_URL.includes('PEGA_AQUI')){
-    document.getElementById('menu').innerHTML = '<div class="loading"><b>Para conectar:</b><br><br>1. Crea Google Sheet con encabezado:<br>id,categoria,nombre,descripcion,precio,imagen,promo<br><br>2. Importa el CSV que te deje de ejemplo<br><br>3. Archivo > Compartir > Publicar en la web > CSV<br><br>4. Copia link (termina en output=csv) y pegalo en SHEET_CSV_URL<br><br>5. Recarga. Ahora cualquiera que edite la planilla cambia la carta para todos.</div>';
-    return;
-  }
   try{
     const res = await fetch(SHEET_CSV_URL);
     const txt = await res.text();
+    // Si devuelve HTML es porque no esta publicada
+    if(txt.trim().startsWith('<!DOCTYPE') || txt.includes('<html')){
+      document.getElementById('menu').innerHTML='<div class="loading"><b>Falta publicar la planilla</b><br><br>1. En tu Google Sheet anda a Archivo > Compartir > Publicar en la web<br>2. En el primer desplegable elegi la hoja (Hoja 1)<br>3. En el segundo elegi Valores separados por comas (.csv)<br>4. Clic en Publicar<br>5. Tambien pon Compartir > Acceso general > Cualquier persona con el link > Lector<br>6. Recarga la carta<br><br>Link actual: '+SHEET_CSV_URL+'</div>';
+      return;
+    }
     const rows = parseCSV(txt);
     productos=[]; const cats=new Set();
     for(let i=1;i<rows.length;i++){
@@ -172,14 +171,14 @@ async function cargarSheets(){
     });
     renderMenu();
   }catch(e){
-    document.getElementById('menu').innerHTML='<div class="loading">Error cargando Sheets:<br>'+e+'<br><br>Verifica que publicaste como CSV publico y el link termina en output=csv</div>';
+    document.getElementById('menu').innerHTML='<div class="loading">Error cargando Sheets:<br>'+e+'<br><br>1. Publica como CSV<br>2. Pon acceso Cualquier persona con link<br>3. Verifica que la primera fila sea: id,categoria,nombre,descripcion,precio,imagen,promo</div>';
   }
 }
 
 function renderMenu(){
   const cont=document.getElementById('menu');
   let lista=categoriaActiva==='todos'?productos:productos.filter(p=>p.cat===categoriaActiva);
-  if(lista.length==0){cont.innerHTML='<p style="text-align:center;color:#666;padding:30px">No hay productos</p>';return}
+  if(lista.length==0){cont.innerHTML='<p style="text-align:center;color:#666;padding:30px">No hay productos en esta categoria - revisa tu planilla</p>';return}
   cont.innerHTML=lista.map(p=>`
     <div class="item">
       <img src="${p.img}" onerror="this.src='https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=300'">
