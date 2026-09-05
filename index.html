@@ -50,10 +50,10 @@ body{background:var(--bg);color:var(--text);padding-bottom:110px}
 </head>
 <body>
 <script>
-const NOMBRE_LOCAL = "DEMO";
+const NOMBRE_LOCAL = "TU LOCAL";
 const DIRECCION_LOCAL = "Av. Siempreviva 123, Lomas de Zamora";
 const WHATSAPP_NUMERO = "5491134890644";
-let COSTO_ENVIO = 0;
+let COSTO_ENVIO = 1500;
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0xsa_u6fEEJTMsqMXfqhYZRrw4kROE4kW4RnfMqwU6O0-LkEuwPqO3WQqpDyBRwN-yuKxsXbWVDpJ/pub?gid=0&single=true&output=csv";
 let categoriaActiva = 'todos';
 let productos = [];
@@ -65,7 +65,7 @@ let tipoEntrega = 'retiro';
 <div class="logo">LOGO</div>
 <h1 id="h1-local">TU LOCAL</h1>
 <p id="p-dir"></p>
-<div class="badge">ABIERTO AHORA - Google Sheets conectado</div>
+<div class="badge">ABIERTO AHORA</div>
 </div>
 
 <div class="banner" onclick="filtrar('combo', document.querySelector('.cat:nth-child(2)'))">
